@@ -56,21 +56,33 @@ class Field implements FieldContract
     public $slug;
 
     /**
-     * @param string $type
+     * Universal attributes are applied to almost all tags,
+     * so they are allocated to a separate group so that they do not repeat for all tags.
      *
-     * @return FieldContract
-     * @throws TypeException
+     * @var array
      */
-    public static function tag(string $type) : FieldContract
-    {
-        $field = config('platform.fields.'.$type);
+    public $universalAttributes = [
+        'accesskey',
+        'class',
+        'contenteditable',
+        'contextmenu',
+        'dir',
+        'hidden',
+        'id',
+        'lang',
+        'spellcheck',
+        'style',
+        'tabindex',
+        'title',
+        'xml:lang',
+    ];
 
-        if (! is_subclass_of($field, FieldContract::class)) {
-            throw new TypeException('Field '.$type.' does not exist or inheritance FieldContract');
-        }
-
-        return new $field();
-    }
+    /**
+     * Attributes available for a particular tag.
+     *
+     * @var array
+     */
+    public $inlineAttributes = [];
 
     /**
      * @param $arguments
@@ -90,6 +102,23 @@ class Field implements FieldContract
     }
 
     /**
+     * @param string $type
+     *
+     * @return FieldContract
+     * @throws TypeException
+     */
+    public static function tag(string $type) : FieldContract
+    {
+        $field = config('platform.fields.'.$type);
+
+        if (! is_subclass_of($field, FieldContract::class)) {
+            throw new TypeException('Field '.$type.' does not exist or inheritance FieldContract');
+        }
+
+        return new $field();
+    }
+
+    /**
      * @param $name
      * @param $arguments
      *
@@ -105,21 +134,6 @@ class Field implements FieldContract
     }
 
     /**
-     * @param      $key
-     * @param null $value
-     *
-     * @return $this|mixed|null
-     */
-    public function get($key, $value = null)
-    {
-        if (! isset($this->attributes[$key])) {
-            return $value;
-        }
-
-        return $this->attributes[$key];
-    }
-
-    /**
      * @param $key
      * @param $value
      *
@@ -130,14 +144,6 @@ class Field implements FieldContract
         $this->attributes[$key] = $value;
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getAttributes() : array
-    {
-        return $this->attributes;
     }
 
     /**
@@ -167,18 +173,60 @@ class Field implements FieldContract
     public function checkRequired()
     {
         foreach ($this->required as $attribute) {
-            if (! $this->attributes->offsetExists($attribute)) {
+            if (! collect($this->attributes)->offsetExists($attribute)) {
                 throw new FieldRequiredAttributeException('Field must have the following attribute: '.$attribute);
             }
         }
     }
 
     /**
-     * @return string
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+     * @throws FieldRequiredAttributeException
      */
-    public function getSlug()
+    public function render()
     {
-        return str_slug($this->get('name'));
+        $this->checkRequired();
+
+        // TODO: Указать параметры в шаблонах, что бы не приходилось проверять на ошибки и т.п.
+
+        $attributes = $this->getModifyAttributes();
+        $attributes['id'] = $this->getId();
+
+        return view($this->view, array_merge($this->getAttributes(), [
+            'attributes' => $attributes,
+            'id'         => $this->getId(),
+            'fieldName'  => $this->getName(),
+            'old'        => $this->getOldValue(),
+            'error'      => $this->hasError(),
+            'slug'       => $this->getSlug(),
+            'oldName'    => $this->getOldName(),
+        ]));
+    }
+
+    /**
+     * @return array
+     */
+    public function getAttributes() : array
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getModifyAttributes()
+    {
+        $modifiers = get_class_methods($this);
+
+        return collect($this->getAttributes())->only(array_merge($this->universalAttributes,
+            $this->inlineAttributes))->map(function ($item, $key) use ($modifiers) {
+                $signature = 'modify'.title_case($key);
+                if (in_array($signature, $modifiers)) {
+                    return $this->$signature($item);
+                }
+
+                return $item;
+            })->toArray();
     }
 
     /**
@@ -193,19 +241,34 @@ class Field implements FieldContract
     }
 
     /**
-     * @return string
+     * @param      $key
+     * @param null $value
+     *
+     * @return $this|mixed|null
      */
-    public function getName()
+    public function get($key, $value = null)
     {
-        $prefix = $this->get('prefix');
-        $lang = $this->get('lang');
-        $name = $this->get('name');
-
-        if (is_null($prefix)) {
-            return $lang.$name;
+        if (! isset($this->attributes[$key])) {
+            return $value;
         }
 
-        return $prefix.'['.$lang.']'.$name;
+        return $this->attributes[$key];
+    }
+
+    /**
+     * @return string
+     */
+    public function getSlug()
+    {
+        return str_slug($this->get('name'));
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOldValue()
+    {
+        return old($this->getOldName());
     }
 
     /**
@@ -225,14 +288,6 @@ class Field implements FieldContract
     }
 
     /**
-     * @return mixed
-     */
-    public function getOldValue()
-    {
-        return old($this->getOldName());
-    }
-
-    /**
      * @return bool
      */
     public function hasError()
@@ -241,27 +296,47 @@ class Field implements FieldContract
     }
 
     /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+     * @return array
      */
-    public function render()
+    public function getOriginalAttributes()
     {
-        /*
-        $this->id = $this->getId();
-        $this->name = $this->getName();
-        $this->old = $this->getOldValue();
-        $this->error = $this->hasError();
-        $this->slug = $this->getSlug();
-        */
+        return array_except($this->getAttributes(), array_merge($this->universalAttributes, $this->inlineAttributes));
+    }
 
-        // TODO: Изменить внедрнение параметров!
+    /**
+     * @param $name
+     *
+     * @return string
+     */
+    public function modifyName($name)
+    {
+        $prefix = $this->get('prefix');
+        $lang = $this->get('lang');
 
-        return view($this->view, array_merge($this->getAttributes(), [
-            'id'      => $this->getId(),
-            'fieldName'    => $this->getName(),
-            'old'     => $this->getOldValue(),
-            'error'   => $this->hasError(),
-            'slug'    => $this->getSlug(),
-            'oldName' => $this->getOldName(),
-        ]));
+        if (is_null($prefix)) {
+            return $lang.$name;
+        }
+
+        return $prefix.'['.$lang.']'.$name;
+    }
+
+    /**
+     * @param $value
+     *
+     * @return mixed
+     */
+    public function modifyValue($value)
+    {
+        $old = $this->getOldValue();
+
+        if (! is_null($old)) {
+            return $old;
+        }
+
+        if ($value instanceof \Closure) {
+            return $value();
+        }
+
+        return $value;
     }
 }

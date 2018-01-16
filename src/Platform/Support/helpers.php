@@ -49,11 +49,19 @@ if (! function_exists('generate_form')) {
             $data = new \Orchid\Platform\Screen\Repository($data);
         }
 
-        $form = new \Orchid\Platform\Fields\Builder($fields, $data, $language, $prefix);
+        return (new \Orchid\Platform\Fields\Builder($fields, $data, $language, $prefix))->generateForm();
+    }
+}
 
-        try {
-            return $form->generateForm();
-        } catch (\Orchid\Platform\Exceptions\TypeException $e) {
-        }
+if (! function_exists('dashboard_domain')) {
+
+    /**
+     * @param string $default
+     *
+     * @return string
+     */
+    function dashboard_domain($default = 'localhost')
+    {
+        return isset(parse_url(config('app.url'))['host']) ? parse_url(config('app.url'))['host'] : $default;
     }
 }

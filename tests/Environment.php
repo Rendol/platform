@@ -22,9 +22,15 @@ trait Environment
         $this->loadLaravelMigrations('orchid');
 
         $this->artisan('migrate', [
-           '--database' => 'orchid',
-       ]);
+            '--database' => 'orchid',
+        ]);
+
         $this->withFactories(__DIR__.'/../database/factories');
+
+        $this->artisan('vendor:publish', [
+            '--all' => true,
+        ]);
+        $this->artisan('orchid:link');
     }
 
     /**

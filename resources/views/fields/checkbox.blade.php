@@ -4,17 +4,12 @@
     @endif
     <div class="checkbox {{$class or ''}}">
         <label class="i-checks">
-            <input type="checkbox"
-                   id="{{$id}}"
-                   value="{{$default or old($default)}}"
-                   @if(isset($value) && $value == $default) checked @endif
-                   name="{{$fieldName}}"
-                   @if(isset($required) && $required) required @endif
-            ><i></i> {{$placeholder or ''}}
+            <input @include('dashboard::partials.fields.attributes', ['attributes' => $attributes])>
+            <i></i> {{$placeholder or ''}}
         </label>
     </div>
     @if(isset($help))
         <p class="help-block">{{$help}}</p>
     @endif
 </div>
-<div class="line line-dashed b-b line-lg"></div>
+@include('dashboard::partials.fields.hr', ['show' => $hr ?? true])
