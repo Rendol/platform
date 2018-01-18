@@ -21,7 +21,6 @@ class FoundationServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->registerCode();
 
         $this->registerProviders();
     }
@@ -70,17 +69,6 @@ class FoundationServiceProvider extends ServiceProvider
         }, config('view.paths')), [
             DASHBOARD_PATH.'/resources/views',
         ]), 'dashboard');
-    }
-
-    /**
-     * Register types.
-     */
-    protected function registerCode()
-    {
-        $this->publishes([
-            DASHBOARD_PATH.'/resources/stubs/behaviors/DemoPost.stub' => app_path('/Core/Behaviors/Many/DemoPost.php'),
-            DASHBOARD_PATH.'/resources/stubs/behaviors/DemoPage.stub' => app_path('/Core/Behaviors/Single/DemoPage.php'),
-        ]);
     }
 
     public function registerProviders()

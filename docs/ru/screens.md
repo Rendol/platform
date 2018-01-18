@@ -1,4 +1,4 @@
-# Screen
+# Экраны
 ----------
 
 
@@ -36,8 +36,6 @@ php artisan make:screen Users
 В директории `app/Http/Controllers/Screens` будет создан файл `Users` со следующим содержанием:
 
 ```php
-<?php
-
 namespace App\Http\Controllers\Screens;
 
 use Illuminate\Http\Request;
@@ -91,6 +89,20 @@ class Users extends Screen
 }
 
 ```
+
+
+
+## Регистрация в маршрутах
+
+Зарегистировать каждый экран можно с помощью метода `screen` у Route
+```php
+Route::screen('/news', 'NewsList','dashboard.screens.news.list');
+//or
+$route->screen('/news', 'NewsList','dashboard.screens.news.list');
+```
+
+
+
 
 ## Данные
 
@@ -209,15 +221,6 @@ public function layout() : array
 
 
 
-## Регистрация в маршрутах
-
-Зарегистировать каждый экран можно с помощью метода `screen` у Route
-```php
-Route::screen('/news', 'NewsList','dashboard.screens.news.list');
-//or
-$route->screen('/news', 'NewsList','dashboard.screens.news.list');
-```
 
 
-
-#### Документация скоро будет дополнена
+> **Примечание** Документация скоро будет дополнена
