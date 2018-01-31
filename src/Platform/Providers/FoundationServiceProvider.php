@@ -5,6 +5,7 @@ namespace Orchid\Platform\Providers;
 use Illuminate\Support\Facades\Route;
 use Orchid\Platform\Kernel\Dashboard;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 
 class FoundationServiceProvider extends ServiceProvider
 {
@@ -17,12 +18,24 @@ class FoundationServiceProvider extends ServiceProvider
             return new Dashboard();
         });
 
+        $this->registerEloquentFactoriesFrom(realpath(DASHBOARD_PATH.'/database/factories'));
+
         $this->registerDatabase();
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
 
         $this->registerProviders();
+    }
+
+    /**
+     * Register factories.
+     *
+     * @param $path
+     */
+    protected function registerEloquentFactoriesFrom($path)
+    {
+        $this->app->make(EloquentFactory::class)->load($path);
     }
 
     /**

@@ -19,18 +19,26 @@ trait Environment
 
         Schema::defaultStringLength(191);
 
+        $this->artisan('vendor:publish', [
+            '--provider' => 'Orchid\Platform\Providers\FoundationServiceProvider',
+        ]);
+
+        $this->artisan('vendor:publish', [
+            '--all' => true,
+        ]);
+
+        $this->artisan('orchid:link');
+
         $this->loadLaravelMigrations('orchid');
 
         $this->artisan('migrate', [
             '--database' => 'orchid',
         ]);
 
-        $this->withFactories(__DIR__.'/../database/factories');
-
-        $this->artisan('vendor:publish', [
-            '--all' => true,
-        ]);
+        $this->artisan('storage:link');
         $this->artisan('orchid:link');
+
+        $this->withFactories(realpath(DASHBOARD_PATH.'/database/factories'));
     }
 
     /**

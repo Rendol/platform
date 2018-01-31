@@ -10,6 +10,8 @@
  то наилучшим вариантом будет воспользоваться классическим контроллером или экраном.
 
 
+![Forms](https://orchid.software/img/scheme/forms.jpg)
+
 Формы не является конструктором или строителем.
 Их смысл в формировании формы данных, в которую можно добавлять новую информацию в виде табов, 
 которые ничего друг о друге не знают, но оперируют одной информацией. 
@@ -37,10 +39,7 @@ ORCHID имеет две формы:
 
 Пример базовой формы:
 ```php
-namespace Orchid\Platform\Http\Forms\Systems\Roles;
-
 use Orchid\Platform\Forms\FormGroup;
-use Orchid\Platform\Core\Models\Role;
 use Orchid\Platform\Events\Systems\RolesEvent;
 
 class RoleFormGroup extends FormGroup
@@ -83,12 +82,8 @@ class RoleFormGroup extends FormGroup
 
 Example:
 ```php
-namespace Orchid\Platform\Http\Forms\Systems\Roles;
-
 use Orchid\Platform\Forms\Form;
 use Orchid\Platform\Core\Models\Role;
-use Alert;
-use Dashboard;
 
 class BaseRolesForm extends Form
 {

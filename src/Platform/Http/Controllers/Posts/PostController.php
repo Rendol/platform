@@ -128,6 +128,7 @@ class PostController extends Controller
      * @param Post         $post
      *
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Orchid\Platform\Exceptions\TypeException
      */
     public function update(Request $request, PostBehavior $type, Post $post) : RedirectResponse
     {
@@ -183,12 +184,33 @@ class PostController extends Controller
     {
         $this->checkPermission('dashboard.posts.type.'.$type->slug);
 
+        $id = $post->id;
         $post->delete();
 
         Alert::success(trans('dashboard::common.alert.success'));
 
         return redirect()->route('dashboard.posts.type', [
-            'type' => $type->slug,
+            'type'    => $type->slug,
+        ])->with([
+            'restore' => route('dashboard.posts.restore', $id),
         ]);
+    }
+
+    /**
+     * @param $id
+     *
+     * @return RedirectResponse
+     */
+    public function restore($id) : RedirectResponse
+    {
+        $post = Post::onlyTrashed()->find($id);
+        $post->restore();
+
+        Alert::success(trans('dashboard::common.alert.success'));
+
+        return redirect()->route('dashboard.posts.type', [
+            'type' => $post->type,
+            'slug' => $post->id,
+       ]);
     }
 }

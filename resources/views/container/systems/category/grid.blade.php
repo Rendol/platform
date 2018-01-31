@@ -26,9 +26,9 @@
         <div class="bg-white-only bg-auto no-border-xs">
 
             @if($category->count() > 0)
-                <div class="panel">
+                <div class="card">
 
-                    <div class="panel-body row">
+                    <div class="card-body row">
 
 
                         <div class="table-responsive">
@@ -38,8 +38,8 @@
                                     <th class="w-xs">{{trans('dashboard::common.Manage')}}</th>
                                     <th>{{trans('dashboard::systems/category.name')}}</th>
 
-                                    @foreach($grid as $key => $column)
-                                        <th>{{$column}}</th>
+                                    @foreach($grid as $th)
+                                        <th width="{{$th->width}}">{{$th->title}}</th>
                                     @endforeach
                                 </tr>
                                 </thead>
@@ -48,13 +48,20 @@
 
                                     <tr>
                                         <td class="text-center">
-                                            <a href="{{ route('dashboard.systems.category.edit',$item->id) }}"><i
-                                                        class="fa fa-bars"></i></a>
+                                            <a href="{{ route('dashboard.systems.category.edit',$item->id) }}">
+                                                <i class="icon-menu"></i>
+                                            </a>
                                         </td>
                                         <td>{{$item->term->getContent('name')}}</td>
 
-                                        @foreach($grid as $key => $column)
-                                            <td>{{$item->term->getContent($key)}}</td>
+                                        @foreach($grid as $td)
+                                            <td>
+                                                @if(!is_null($td->render))
+                                                    {!! $td->handler($item->term) !!}
+                                                @else
+                                                    {{ $item->term->getContent($td->name) }}
+                                                @endif
+                                            </td>
                                         @endforeach
                                     </tr>
 
@@ -71,7 +78,7 @@
 
                     </div>
 
-                    <footer class="panel-footer">
+                    <footer class="card-footer">
                         <div class="row">
                             <div class="col-sm-5">
                                 <small class="text-muted inline m-t-sm m-b-sm">{{trans('dashboard::common.show')}} {{$category->total()}}

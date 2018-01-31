@@ -15,14 +15,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Orchid\Platform\Exceptions\TypeException;
 use Orchid\Platform\Core\Traits\JsonRelations;
 use Orchid\Platform\Core\Traits\MultiLanguage;
-use Orchid\Platform\Core\Traits\RepositoryFields;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Post extends Model
 {
-    use SoftDeletes, TaggableTrait, Sluggable, MultiLanguage, Searchable, Attachment, JsonRelations, RepositoryFields;
+    use SoftDeletes, TaggableTrait, Sluggable, MultiLanguage, Searchable, Attachment, JsonRelations;
 
     /**
      * @var string
@@ -74,17 +73,6 @@ class Post extends Model
     ];
 
     /**
-     * @return array
-     */
-    public function getRepositoryFields()
-    {
-        return [
-            'content',
-            'options',
-        ];
-    }
-
-    /**
      * Return the sluggable configuration array for this model.
      *
      * @return array
@@ -102,6 +90,7 @@ class Post extends Model
      * Get the indexable data array for the model.
      *
      * @return array
+     * @throws TypeException
      */
     public function toSearchableArray()
     {
@@ -110,6 +99,8 @@ class Post extends Model
         if (method_exists($behavior, 'toSearchableArray')) {
             return $behavior->toSearchableArray($this->toArray());
         }
+
+        return [];
     }
 
     /**
@@ -118,6 +109,7 @@ class Post extends Model
      * @param null $slug
      *
      * @return null
+     * @throws TypeException
      */
     public function getBehaviorObject($slug = null)
     {
@@ -125,10 +117,7 @@ class Post extends Model
             return $this->behavior;
         }
 
-        try {
-            return $this->getBehavior($slug ?: $this->getAttribute('type'))->behavior;
-        } catch (TypeException $e) {
-        }
+        return $this->getBehavior($slug ?: $this->getAttribute('type'))->behavior;
     }
 
     /**
@@ -153,7 +142,7 @@ class Post extends Model
      */
     public function getOptions() : Collection
     {
-        return collect($this->options->all());
+        return collect($this->options);
     }
 
     /**
@@ -406,14 +395,12 @@ class Post extends Model
      * @param null    $behavior
      *
      * @return Builder
+     * @throws TypeException
      */
     public function scopeFiltersApplyDashboard(Builder $query, $behavior = null) : Builder
     {
         if (! is_null($behavior)) {
-            try {
-                $this->getBehavior($behavior);
-            } catch (TypeException $e) {
-            }
+            $this->getBehavior($behavior);
         }
 
         return $this->filter($query, true);

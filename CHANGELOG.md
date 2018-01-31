@@ -10,11 +10,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - "DIV" Layouts
 - "Select" field
 - "Show" key for admin menu
+- Command `make:chart`
 
 ### Changed
+- Upgrade to Bootstrap 4.0
+- Behaviors and Layouts has a separate folder
 - Record fields as objects #391
 - Demo "behaviors" are no longer published
 - Access validation does not create multiple database queries
+- Hide forms switching with their small number
 
 ### Deprecated
 - Record string/array for fields. Use `Field::make`

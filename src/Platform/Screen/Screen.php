@@ -3,6 +3,7 @@
 namespace Orchid\Platform\Screen;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 abstract class Screen
 {
@@ -19,10 +20,18 @@ abstract class Screen
      * @var string
      */
     public $description;
+
     /**
      * @var array|Request|string
      */
     public $request;
+
+    /**
+     * Permission.
+     *
+     * @var string
+     */
+    public $permission;
 
     /**
      * @var array
@@ -58,6 +67,16 @@ abstract class Screen
     }
 
     /**
+     * Views.
+     *
+     * @return array
+     */
+    public function layout() : array
+    {
+        return [];
+    }
+
+    /**
      * @return array
      */
     public function build() : array
@@ -77,56 +96,6 @@ abstract class Screen
     }
 
     /**
-     * Views.
-     *
-     * @return array
-     */
-    public function layout() : array
-    {
-        return [];
-    }
-
-    /**
-     * @param $method
-     * @param $parameters
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
-     */
-    public function handle($method = null, $parameters = null)
-    {
-        if ($this->request->method() === 'GET' || (is_null($method) && is_null($parameters))) {
-            if (! is_array($method)) {
-                $method = [$method];
-            }
-            $this->arguments = $method;
-
-            return $this->view();
-        }
-
-        if (! is_null($parameters)) {
-            if (! is_array($method)) {
-                $method = [$method];
-            }
-            $this->arguments = $method;
-
-            $this->reflectionParams($parameters);
-            asort($this->arguments);
-
-            return call_user_func_array([$this, $parameters], $this->arguments);
-        }
-
-        if (! is_array($parameters)) {
-            $parameters = [$parameters];
-        }
-        $this->arguments = $parameters;
-
-        $this->reflectionParams($method);
-        asort($this->arguments);
-
-        return call_user_func_array([$this, $method], $this->arguments);
-    }
-
-    /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function view()
@@ -140,7 +109,40 @@ abstract class Screen
     }
 
     /**
+     * @param null $method
+     * @param null $parameters
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+     * @throws \ReflectionException
+     */
+    public function handle($method = null, $parameters = null)
+    {
+        if (! $this->checkAccess()) {
+            abort(404);
+        }
+
+        if ($this->request->method() === 'GET' || (is_null($method) && is_null($parameters))) {
+            $this->arguments = is_array($method) ? $method : [$method];
+
+            return $this->view();
+        }
+
+        if (! is_null($parameters)) {
+            $this->arguments = is_array($method) ? $method : [$method];
+
+            $this->reflectionParams($parameters);
+
+            return call_user_func_array([$this, $parameters], $this->arguments);
+        }
+
+        $this->arguments = is_array($parameters) ? $parameters : [$parameters];
+        $this->reflectionParams($method);
+
+        return call_user_func_array([$this, $method], $this->arguments);
+    }
+
+    /**
      * @param $method
+     * @throws \ReflectionException
      */
     public function reflectionParams($method)
     {
@@ -155,10 +157,8 @@ abstract class Screen
                 continue;
             }
 
-            $arg[] = app()->make($parameter->getClass()->name);
+            $this->arguments[$key] = app()->make($parameter->getClass()->name);
         }
-
-        $this->arguments = array_merge($arg ?? [], $this->arguments);
     }
 
     /**
@@ -178,17 +178,26 @@ abstract class Screen
     }
 
     /**
-     * @param $key
-     * @param $class
-     *
      * @return bool
      */
-    private function checkClassInArrayByKey($key, $class)
+    private function checkAccess()
     {
-        if (array_key_exists($key, $this->arguments) && get_class($this->arguments[$key]) == $class) {
+        if (is_null($this->permission)) {
             return true;
         }
 
-        return false;
+        if (is_string($this->permission)) {
+            $this->permission = [$this->permission];
+        }
+
+        if (is_array($this->permission)) {
+            foreach ($this->permission as $item) {
+                if (! Auth::user()->hasAccess($item)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }

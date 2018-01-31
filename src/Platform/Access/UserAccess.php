@@ -53,13 +53,13 @@ trait UserAccess
     }
 
     /**
-     * @param $checkPermissions
-     *
+     * @param      $checkPermissions
+     * @param bool $cache
      * @return bool
      */
-    public function hasAccess($checkPermissions) : bool
+    public function hasAccess($checkPermissions, $cache = true) : bool
     {
-        if (is_null($this->cachePermissions)) {
+        if (is_null($this->cachePermissions) || ! $cache) {
             $this->cachePermissions = $this->roles()->pluck('permissions')->prepend($this->permissions);
         }
 

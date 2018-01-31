@@ -6,44 +6,31 @@
 @section('content')
 
 
+
     <!-- main content  -->
     <section>
         <div class="bg-white-only bg-auto no-border-xs">
 
             @if($menu->count() > 0)
-                <div class="panel">
 
-                    <div class="panel-body row">
 
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th class="w-xs">{{trans('dashboard::common.Manage')}}</th>
-                                    <th>{{trans('dashboard::systems/menu.form.title')}}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
+                <div class="jumbotron text-center bg-white not-found">
+                    <div>
+                        <h3 class="font-thin">{{trans('dashboard::systems/menu.description')}}</h3>
+                        <ul class="text-left">
+                            @foreach ($menu as $key => $value)
 
-                                @foreach ($menu as $key => $value)
-                                    <tr>
-                                        <td class="text-center">
-                                            <a href="{{ route('dashboard.systems.menu.show',$key) }}"><i class="fa fa-bars"></i></a>
-                                        </td>
-                                        <td>{{ $value }}</td>
+                                <li>
+                                    <a href="{{ route('dashboard.systems.menu.show',$key) }}">{{ $value }}</a>
+                                </li>
+                            @endforeach
 
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
+                        </ul>
                     </div>
-
-
                 </div>
 
             @else
+
 
                 <div class="jumbotron text-center bg-white not-found">
                     <div>
@@ -52,6 +39,7 @@
                 </div>
 
             @endif
+
 
         </div>
     </section>
