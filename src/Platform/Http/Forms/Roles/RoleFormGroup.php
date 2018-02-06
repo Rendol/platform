@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Http\Forms\Systems\Roles;
 
 use Illuminate\Contracts\View\View;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Http\Controllers\Systems;
 
 use Illuminate\Support\Facades\Auth;

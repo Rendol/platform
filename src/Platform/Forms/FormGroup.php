@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Forms;
 
 use Illuminate\View\View;
@@ -214,11 +216,11 @@ abstract class FormGroup
     }
 
     /**
-     * @param $method
+     * @param string|int $method
      *
      * @return FormGroup
      */
-    public function slug(string $method) : self
+    public function slug($method) : self
     {
         $this->slug = $method;
 

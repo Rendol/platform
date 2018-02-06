@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Http\Forms\Systems\Users;
 
 use Illuminate\Contracts\View\View;
@@ -32,12 +34,14 @@ class UserFormGroup extends FormGroup
      */
     public function main() : View
     {
-        $users = config('platform.common.user');
-        $users = (new $users);
+        $behavior = config('platform.common.user');
+        $behavior = new $behavior;
 
         return view('dashboard::container.systems.users.grid', [
-            'users' => User::paginate(),
-            'grid'  => $users->grid(),
+            'users'    => User::filtersApply($behavior->filters())->paginate(),
+            'behavior' => $behavior,
+            'filters'  => collect($behavior->filters()),
+            'chunk'    => $behavior->chunk,
         ]);
     }
 }

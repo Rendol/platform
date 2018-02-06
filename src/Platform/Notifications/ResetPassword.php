@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Notifications;
 
 use Illuminate\Notifications\Notification;

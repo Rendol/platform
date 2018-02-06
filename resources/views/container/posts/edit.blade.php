@@ -5,7 +5,7 @@
 
     <ul class="nav justify-content-end  v-center">
 
-            @if($locales->count() > 1)
+        @if($locales->count() > 1)
             <li class="nav-item dropdown">
                 <a href="#"
                    class="nav-link dropdown-toggle text-uppercase padder-v"
@@ -32,6 +32,7 @@
 
         <li>
                 <button type="submit"
+                        onclick="window.dashboard.validateForm('post-form','{{trans('dashboard::common.alert.validate')}}')"
                         form="post-form"
                         class="btn btn-sm btn-link"><i class="sli icon-check fa-2x"></i></button>
             </li>
@@ -53,13 +54,13 @@
         ])}}" enctype="multipart/form-data">
         @if(count($type->fields()) > 0)
             <!-- column  -->
-                <div class="col  lter b-r">
+                <div class="hbox-col  lter b-r">
                     <div class="vbox">
                         <div class="bg-white">
                             <div class="tab-content @if(!$type->checkModules()) container @endif">
                                 @foreach($locales as $code => $lang)
                                     <div class="tab-pane @if ($loop->first) active  @endif" id="local-{{$code}}">
-                                        <div class="wrapper-md  bg-white">
+                                        <div class="wrapper-lg  bg-white">
 
                                             {!! generate_form($type->fields(), $post->toArray(), $code, 'content') !!}
 
@@ -74,11 +75,11 @@
         @endif
         @if($type->checkModules())
             <!-- column  -->
-                <div class="col wi-col lter">
+                <div class="hbox-col wi-col lter">
                     <div class="vbox">
                         <div class="nav-tabs-alt">
                             @if(count($type->render() ) > 1)
-                                <ul class="nav nav-tabs">
+                                <ul class="nav nav-tabs bg-light">
                                 @foreach($type->render() as $name => $view)
                                     <li class="nav-item">
                                         <a class="nav-link @if ($loop->first) active @endif" data-target="#module-{{str_slug($name)}}" role="tab" data-toggle="tab"

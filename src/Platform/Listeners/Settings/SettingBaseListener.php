@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Listeners\Settings;
 
 use Orchid\Platform\Http\Forms\Settings\BaseSettingsForm;

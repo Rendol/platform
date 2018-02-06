@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Http\Forms\Category;
 
 use Illuminate\Http\Request;
@@ -66,7 +68,7 @@ class CategoryDescForm extends Form
             'language'     => App::getLocale(),
             'termTaxonomy' => $termTaxonomy,
             'locales'      => collect(config('platform.locales')),
-            'fields'       => $this->behavior->fields(),
+            'behavior'       => $this->behavior,
         ]);
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Core\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -40,11 +42,11 @@ class Comment extends Model
     /**
      * Find a comment by post ID.
      *
-     * @param int $postId
+     * @param $postId
      *
-     * @return Comment
+     * @return mixed
      */
-    public static function findByPostId($postId) : self
+    public static function findByPostId($postId)
     {
         $instance = new static();
 

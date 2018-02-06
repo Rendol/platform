@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Core\Traits;
 
 use Illuminate\Support\Facades\Cache;
@@ -14,7 +16,7 @@ trait SettingTrait
      *
      * @return bool
      */
-    public function set(string $key, $value) : bool
+    public function set(string $key, $value)
     {
         $result = $this->firstOrNew([
             'key' => $key,
@@ -89,7 +91,7 @@ trait SettingTrait
      *
      * @return mixed
      */
-    public function forget($key) : bool
+    public function forget($key)
     {
         if (is_array($key)) {
             $result = $this->whereIn('key', $key)->delete();

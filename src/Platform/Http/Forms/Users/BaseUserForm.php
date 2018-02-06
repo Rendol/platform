@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Http\Forms\Systems\Users;
 
 use Illuminate\Http\Request;
@@ -60,7 +62,7 @@ class BaseUserForm extends Form
             'user'     => $user ?: new $this->model(),
             'language' => App::getLocale(),
             'locales'  => config('platform.locales'),
-            'fields'   => $this->behavior->fields(),
+            'behavior' => $this->behavior,
         ]);
     }
 

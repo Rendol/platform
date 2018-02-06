@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Core\Models;
 
 use Illuminate\Support\Str;
@@ -199,7 +201,7 @@ class Post extends Model
      */
     public function getStringTags()
     {
-        return $this->tags->implode('name', $this->getTagsDelimiter());
+        return $this->tags->implode('name', static::getTagsDelimiter());
     }
 
     /**
@@ -211,7 +213,7 @@ class Post extends Model
      */
     public function hero($size = null)
     {
-        $first = $this->attachment('image')->orderBy('sort', 'asc')->first();
+        $first = $this->attachment('image')->oldest('sort')->first();
 
         return $first ? $first->url($size) : null;
     }

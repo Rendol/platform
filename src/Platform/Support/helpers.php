@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 if (! function_exists('alert')) {
     /**
      * Helper function to send an alert.
@@ -64,6 +66,10 @@ if (! function_exists('dashboard_domain')) {
      */
     function dashboard_domain($default = 'localhost')
     {
-        return isset(parse_url(config('app.url'))['host']) ? parse_url(config('app.url'))['host'] : $default;
+        try {
+            return isset(parse_url(config('app.url'))['host']) ? parse_url(config('app.url'))['host'] : $default;
+        } catch (\Exception $exception) {
+            return 'localhost';
+        }
     }
 }

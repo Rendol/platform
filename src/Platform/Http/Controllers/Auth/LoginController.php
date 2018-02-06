@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Http\Controllers\Auth;
 
 use Orchid\Platform\Http\Controllers\Controller;

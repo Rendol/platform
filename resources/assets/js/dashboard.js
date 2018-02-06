@@ -28,16 +28,34 @@ window.dashboard = {
    * @param type
    * @param target
    */
-  alert: function(message, type, target) {
+  alert: function(message, type = 'danger', target = '#dashboard-alerts') {
     $(target).append(
-      $('<div/>', { class: 'alert alert-' + type, text: message }).append(
-        $('<a/>', {
+      $('<div/>', {
+        class: 'alert m-b-none alert-' + type,
+        text: message,
+      }).append(
+        $('<button/>', {
           class: 'close',
           'data-dismiss': 'alert',
           'aria-label': 'Close',
+          'aria-hidden': 'true',
         }).append($('<span/>', { 'aria-hidden': 'true', html: '&times;' })),
       ),
       $('<div/>', { class: 'clearfix' }),
     );
+  },
+
+  /**
+   *
+   * @param idForm
+   * @param message
+   * @returns {boolean}
+   */
+  validateForm: function(idForm, message) {
+    if (!document.getElementById(idForm).checkValidity()) {
+      window.dashboard.alert(message, 'warning b-b');
+      return false;
+    }
+    return true;
   },
 };

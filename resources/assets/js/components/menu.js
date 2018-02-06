@@ -54,7 +54,7 @@ document.addEventListener('turbolinks:load', function() {
         this.send();
       },
       addStatic: function(name, slug) {
-        if (slug.charAt(0) != '/') {
+        if (slug.charAt(0) !== '/') {
           slug = '/' + slug;
         }
 
@@ -64,7 +64,7 @@ document.addEventListener('turbolinks:load', function() {
         $('#ahref-custom-pages').tab('show');
       },
       edit: function(element) {
-        var data = $(element)
+        const data = $(element)
           .parent()
           .data();
         data.label = $(element)
@@ -107,9 +107,9 @@ document.addEventListener('turbolinks:load', function() {
       send: function() {
         //Отправка данных
 
-        var name = $('.dd').attr('data-name');
+        const name = $('.dd').attr('data-name');
 
-        var data = {
+        const data = {
           lang: $('.dd').attr('data-lang'),
           data: $('.dd').nestable('serialize'),
         };
@@ -119,7 +119,7 @@ document.addEventListener('turbolinks:load', function() {
           .then(function(response) {});
       },
       exist: function() {
-        return !!(
+        return (
           Number.isInteger(this.id) &&
           $('li[data-id=' + this.id + ']').length > 0
         );

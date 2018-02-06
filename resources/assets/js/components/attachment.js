@@ -3,7 +3,7 @@ document.addEventListener('turbolinks:load', function() {
     return;
   }
 
-  var attachmentDescription = new Vue({
+  const attachmentDescription = new Vue({
     el: '#modalAttachment',
     data: {
       attachment: {},
@@ -40,7 +40,7 @@ document.addEventListener('turbolinks:load', function() {
     },
   });
 
-  var postDropzone = new Dropzone('.dropzone', {
+  const postDropzone = new Dropzone('.dropzone', {
     url: dashboard.prefix('/systems/files'),
     method: 'post',
     uploadMultiple: false,
@@ -79,9 +79,9 @@ document.addEventListener('turbolinks:load', function() {
         $('.sortable-dropzone').sortable('enable');
       });
 
-      var instanceDropZone = this;
+      const instanceDropZone = this;
 
-      var id = $('#post').data('post-id');
+      const id = $('#post').data('post-id');
       if (id !== undefined) {
         $.ajax({
           type: 'get',
@@ -89,10 +89,10 @@ document.addEventListener('turbolinks:load', function() {
           data: { _token: $("meta[name='csrf_token']").attr('content') },
           dataType: 'html',
           success: function(data) {
-            var images = JSON.parse(data);
+            const images = JSON.parse(data);
 
             images.forEach(function(item, i, arr) {
-              var mockFile = {
+              const mockFile = {
                 id: item.id,
                 name: item.original_name,
                 size: item.size,
@@ -163,9 +163,9 @@ document.addEventListener('turbolinks:load', function() {
 
   $('.sortable-dropzone').sortable({
     update: function() {
-      var items = {};
+      const items = {};
       $('.file-sort').each(function(index, value) {
-        var id = $(this).attr('data-file-id');
+        const id = $(this).attr('data-file-id');
         items[id] = index;
       });
 

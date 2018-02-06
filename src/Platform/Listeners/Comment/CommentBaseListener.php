@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Listeners\Comment;
 
 use Orchid\Platform\Http\Forms\Comment\BaseCommentForm;

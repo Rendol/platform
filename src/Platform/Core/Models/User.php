@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Core\Models;
 
 use Orchid\Platform\Access\UserAccess;
@@ -60,5 +62,19 @@ class User extends Authenticatable implements UserInterface
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPassword($token));
+    }
+
+    /**
+     * Set permission as boolean.
+     *
+     * @param  string  $value
+     * @return void
+     */
+    public function setPermissionsAttribute($permissions)
+    {
+        foreach ($permissions as $key => $value) {
+            $permissions[$key] = boolval($value);
+        }
+        $this->attributes['permissions'] = json_encode($permissions ?? []);
     }
 }

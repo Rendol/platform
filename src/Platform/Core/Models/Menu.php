@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Core\Models;
 
 use Illuminate\Support\Collection;
@@ -73,6 +75,6 @@ class Menu extends Model
      */
     public function getAll($id) : Collection
     {
-        return $this->where('type', $id)->orderBy('id', 'asc')->get();
+        return $this->where('type', $id)->oldest('id')->get();
     }
 }

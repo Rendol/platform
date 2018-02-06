@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orchid\Platform\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
